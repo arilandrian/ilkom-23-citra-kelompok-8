@@ -4,9 +4,16 @@ import cv2
 import numpy as np
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads/'
-app.config['PROCESSED_FOLDER'] = 'static/processed/'
 
+# Pastikan folder static selalu di dalam direktori aplikasi
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Direktori utama proyek
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+PROCESSED_FOLDER = os.path.join(BASE_DIR, 'static', 'processed')
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
+
+# Pastikan folder otomatis dibuat dalam direktori aplikasi
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['PROCESSED_FOLDER'], exist_ok=True)
 
