@@ -7,6 +7,7 @@ document.getElementById("imageInput").addEventListener("change", function(event)
         reader.onload = function(e) {
             preview.src = e.target.result;
             preview.style.display = "block";
+            previewText.style.display = "block";
         };
         reader.readAsDataURL(file);
     }

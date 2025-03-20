@@ -11,9 +11,11 @@
     <a href="/">kembali ke halaman utama</a>
     <form action="/proses_gambar" method="POST" enctype="multipart/form-data">
         <input type="file" name="image" id="imageInput" accept="image/*" required>
+        <p id="previewText" style="display: none; text-align: center; font-weight: bold;">Preview</p>
         <img id="preview" src="#" alt="Image Preview" style="display:none;">
         <button type="submit">Process</button>
     </form>
+    
     
     {% if original and processed %}
         <h2>Original Image</h2>
