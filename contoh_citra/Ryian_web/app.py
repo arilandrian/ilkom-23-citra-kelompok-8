@@ -30,12 +30,24 @@ def upload_image():
             # Convert to grayscale
             img = cv2.imread(filepath)
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            processed_path = os.path.join(app.config['PROCESSED_FOLDER'], file.filename)
-            cv2.imwrite(processed_path, gray_img)
-            
-            return render_template('bebasji.html', original=file.filename, processed=file.filename)
-    
-    return render_template('bebasji.html', original=None, processed=None)
+
+            # Tambahkan thresholding (Hitam-Putih)
+            _, bw_img = cv2.threshold(gray_img, 128, 255, cv2.THRESH_BINARY)
+
+            # Simpan hasil grayscale
+            processed_path_gray = os.path.join(app.config['PROCESSED_FOLDER'], 'gray_' + file.filename)
+            cv2.imwrite(processed_path_gray, gray_img)
+
+            # Simpan hasil thresholding (Hitam-Putih)
+            processed_path_bw = os.path.join(app.config['PROCESSED_FOLDER'], 'bw_' + file.filename)
+            cv2.imwrite(processed_path_bw, bw_img)
+
+            return render_template('bebasji.html', 
+                                   original=file.filename, 
+                                   processed_gray='gray_' + file.filename, 
+                                   processed_bw='bw_' + file.filename)
+
+    return render_template('bebasji.html', original=None, processed_gray=None, processed_bw=None)
 
 if __name__ == '__main__':
     app.run(debug=True)

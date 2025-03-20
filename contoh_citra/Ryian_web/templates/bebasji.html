@@ -9,7 +9,7 @@
 <body>
     <h1>Upload an Image</h1>
     <a href="/">kembali ke halaman utama</a>
-    <form action="/proses_gambar" method="POST" enctype="multipart/form-data">
+    <!-- <form action="/proses_gambar" method="POST" enctype="multipart/form-data">
         <input type="file" name="image" id="imageInput" accept="image/*" required>
         <p id="previewText" style="display: none; text-align: center; font-weight: bold;">Preview</p>
         <img id="preview" src="#" alt="Image Preview" style="display:none;">
@@ -22,7 +22,26 @@
         <img src="{{ url_for('static', filename='uploads/' + original) }}" alt="Original Image">
         <h2>Grayscale Image</h2>
         <img src="{{ url_for('static', filename='processed/' + processed) }}" alt="Processed Image">
+    {% endif %} -->
+
+    <form action="/proses_gambar" method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" id="imageInput" accept="image/*" required>
+        <p id="previewText" style="display: none; text-align: center; font-weight: bold;">Preview</p>
+        <img id="preview" src="#" alt="Image Preview" style="display:none;">
+        <button type="submit">Upload & Convert</button>
+    </form>
+    
+    {% if original %}
+        <h2>Original Image</h2>
+        <img src="{{ url_for('static', filename='uploads/' + original) }}" alt="Original Image">
+    
+        <h2>Grayscale Image</h2>
+        <img src="{{ url_for('static', filename='processed/' + processed_gray) }}" alt="Grayscale Processed Image">
+    
+        <h2>Black & White Image</h2>
+        <img src="{{ url_for('static', filename='processed/' + processed_bw) }}" alt="Black & White Processed Image">
     {% endif %}
+    
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
