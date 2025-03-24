@@ -1,12 +1,13 @@
-document.getElementById("imageInput").addEventListener("change", (event) => {
+document.getElementById("imageInput").addEventListener("change", function(event) {
     const preview = document.getElementById("preview");
-    const [file] = event.target.files;
+    const file = event.target.files[0];
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = function(e) {
             preview.src = e.target.result;
             preview.style.display = "block";
+            previewText.style.display = "block";
         };
         reader.readAsDataURL(file);
     }
