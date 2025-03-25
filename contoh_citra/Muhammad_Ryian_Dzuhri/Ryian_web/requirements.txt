@@ -1,0 +1,6 @@
+Flask==3.1.0
+matplotlib==3.8.2
+numpy>=1.20
+opencv_python==4.11.0.86
+PyYAML==6.0.2
+PyYAML==6.0.2
