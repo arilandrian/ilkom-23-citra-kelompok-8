@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Baca gambar grayscale
-image = cv2.imread('sample.png')
+image = cv2.imread('c:/laragon/www/KEL8PCD/ilkom-23-citra-kelompok-8/contoh_citra/Indah_Haerunnisa/histogram_citra/sample.png')
 
 cv2.imshow('blue',image[:,:,0])
 
