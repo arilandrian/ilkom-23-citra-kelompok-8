@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Process Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        footer {
+            margin-top: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image</h1>
+    <form action="/proses_gambar" method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" id="imageInput" accept="image/*" required>
+        <img id="preview" src="#" alt="Image Preview" style="display:none;">
+        <button type="submit">Process</button>
+    </form>
+
+    {% if original and processed %}
+        <h2>Original Image</h2>
+        <img src="{{ url_for('static', filename='uploads/' + original) }}" alt="Original Image">
+        <h2>Processed Image</h2>
+        <img src="{{ url_for('static', filename='processed/' + processed) }}" alt="Processed Image">
+    {% endif %}
+
+    <footer>
+        <p>&copy; 2025 Image Resolution | Padli.s</p>
+    </footer>
+
+    <script>
+        document.getElementById("imageInput").addEventListener("change", function(event) {
+            const preview = document.getElementById("preview");
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
