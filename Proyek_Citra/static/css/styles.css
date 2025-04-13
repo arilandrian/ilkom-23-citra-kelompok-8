@@ -1,6 +1,6 @@
 body {
-    background: #19182d; /* Background hitam */
-    color: #fff; /* Warna teks putih */
+    background: #19182d; /* Latar belakang gelap elegan */
+    color: #fff; /* Warna teks putih terang untuk kontras */
     font-size: 14px;
   }
   
@@ -13,8 +13,8 @@ body {
   p.text-muted {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 1.6em; /* Ukuran font sedikit lebih besar */
-    color: #ffffff !important; /* Warna teks yang lebih lembut */
+    font-size: 1.6em; /* Sedikit lebih besar agar nyaman dibaca */
+    color: #ffffff !important; /* Warna putih lembut untuk teks */
     line-height: 1.6;
   }
   
@@ -23,19 +23,20 @@ body {
     max-width: 480px;
     margin: 0 auto 30px auto;
     padding: 20px;
-    background-color: #001f3e; /* Dark Blue */
-    color: #fff; /* Teks putih */
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #001f3e; /* Biru tua yang dalam */
+    color: #fff; /* Teks putih kontras */
+    border-radius: 10px; /* Sudut melengkung untuk kesan modern */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Efek bayangan lembut */
   }
   
-  textarea, input[type="file"] {
+  textarea,
+  input[type="file"] {
     font-size: 13px;
     padding: 6px 10px;
   }
   
   textarea {
-    resize: none;
+    resize: none; /* Nonaktifkan pengubahan ukuran manual */
   }
   
   .section-title {
@@ -47,6 +48,6 @@ body {
   .btn {
     padding: 6px 16px;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 8px; /* Tombol dengan sudut membulat */
   }
   
