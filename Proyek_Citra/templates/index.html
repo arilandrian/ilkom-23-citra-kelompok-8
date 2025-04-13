@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Steganografi LSB - Upload Gambar</title>
+ </head>
+ <body>
+     <h1>Steganografi LSB - Sisipkan Pesan ke Gambar</h1>
+     <form action="/" method="POST" enctype="multipart/form-data">
+         <label for="image">Pilih Gambar:</label>
+         <input type="file" name="image" id="image" required><br><br>
+ 
+         <label for="message">Pesan:</label>
+         <input type="text" name="message" id="message" required><br><br>
+ 
+         <button type="submit">Sisipkan Pesan</button>
+     </form>
+ 
+     <hr>
+     <h3>Atau, jika ingin mengekstrak pesan dari gambar yang sudah disisipkan, klik di bawah ini:</h3>
+     <a href="/decode">Decode Pesan dari Gambar</a>
+ </body>
+ </html>
