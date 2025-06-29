@@ -12,7 +12,7 @@
         
         <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Gambar Tersisipkan Pesan" class="img-fluid mb-4 rounded shadow">
         
-       <div class="mb-4 text-start">
+        <div class="mb-4 text-start">
             <h4 class="text-primary text-center">Analisis Kualitas dan Kapasitas Gambar:</h4>
             <ul class="list-group">
                 <li class="list-group-item"><strong>MSE (Mean Squared Error):</strong> {{ '%.10f'|format(mse_raw) }}</li>
@@ -20,6 +20,11 @@
                 <li class="list-group-item"><strong>Kapasitas Penyisipan:</strong> {{ capacity_bytes }} bytes</li>
                 <li class="list-group-item"><strong>SSIM (Structural Similarity Index):</strong> {{ ssim }}</li>
             </ul>
+        </div>
+        
+        <div class="mb-4">
+            <h4 class="text-primary">Perbandingan Histogram</h4>
+            <img src="{{ url_for('static', filename='histograms/' + histogram_file) }}" alt="Perbandingan Histogram Gambar" class="img-fluid rounded shadow">
         </div>
   
         <a href="{{ url_for('static', filename='uploads/' + image_name) }}" download="{{ image_name }}" class="btn btn-primary">

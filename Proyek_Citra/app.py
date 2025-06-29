@@ -1,41 +1,73 @@
-# Proyek_Citra/app.py (Modifikasi Tahap 2)
+# Proyek_Citra/app.py (Versi Final dengan 7 Fitur)
 
 from flask import Flask, render_template, request, redirect, url_for
 from PIL import Image
 import os
 import numpy as np
-# --- Import baru untuk SSIM ---
 from skimage.metrics import structural_similarity as ssim
+# --- Import baru untuk Histogram ---
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
-# --- FITUR MATEMATIKA: Kalkulasi Kapasitas ---
+# --- Fitur #5: Kalkulasi Kapasitas ---
 def calculate_capacity(img):
-    """
-    Menghitung kapasitas maksimum penyisipan dalam bit dan byte.
-    """
     width, height = img.size
     capacity_in_bits = width * height * 3
     capacity_in_bytes = capacity_in_bits // 8
     return capacity_in_bits, capacity_in_bytes
 
-# --- FITUR MATEMATIKA BARU: Kalkulasi SSIM ---
+# --- Fitur #6: Kalkulasi SSIM ---
 def calculate_ssim(original_path, stego_path):
-    """
-    Menghitung Structural Similarity Index (SSIM) antara dua gambar.
-    Ini adalah fitur matematika #6.
-    """
-    # Membaca gambar dan mengubahnya menjadi array NumPy
     original_img = np.array(Image.open(original_path).convert('RGB'))
     stego_img = np.array(Image.open(stego_path).convert('RGB'))
-    
-    # Menghitung SSIM. `channel_axis=2` digunakan untuk gambar berwarna (RGB).
-    # `data_range` penting untuk memastikan skala perhitungan benar.
     ssim_value, _ = ssim(original_img, stego_img, full=True, channel_axis=2, data_range=original_img.max() - original_img.min())
-    
     return ssim_value
 
-# Fungsi untuk menyisipkan pesan (encode LSB)
+# --- FITUR MATEMATIKA BARU (#7): Membuat dan Menyimpan Histogram ---
+def create_and_save_histograms(original_path, stego_path, output_folder):
+    """
+    Membuat, membandingkan, dan menyimpan histogram dari gambar asli dan stego.
+    """
+    original_img = Image.open(original_path).convert('RGB')
+    stego_img = Image.open(stego_path).convert('RGB')
+    
+    # Menggunakan tema gelap agar serasi dengan template
+    plt.style.use('dark_background')
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    
+    colors = ('r', 'g', 'b')
+    
+    # --- Histogram untuk gambar asli ---
+    axes[0].set_title('Histogram Gambar Asli')
+    axes[0].set_xlabel('Intensitas')
+    axes[0].set_ylabel('Frekuensi')
+    # Menghitung dan menggambar histogram untuk setiap channel warna
+    for i, color in enumerate(colors):
+        # Mengambil data histogram dari channel yang sesuai
+        hist = original_img.histogram()[i*256:(i+1)*256]
+        axes[0].plot(hist, color=color)
+    axes[0].set_xlim([0, 256])
+
+    # --- Histogram untuk gambar stego ---
+    axes[1].set_title('Histogram Gambar Stego')
+    axes[1].set_xlabel('Intensitas')
+    # Menghitung dan menggambar histogram untuk setiap channel warna
+    for i, color in enumerate(colors):
+        hist = stego_img.histogram()[i*256:(i+1)*256]
+        axes[1].plot(hist, color=color)
+    axes[1].set_xlim([0, 256])
+
+    # Menyimpan gambar histogram ke file
+    histogram_filename = f"hist_comparison_{os.path.basename(original_path)}"
+    histogram_path = os.path.join(output_folder, histogram_filename)
+    os.makedirs(output_folder, exist_ok=True)
+    plt.savefig(histogram_path)
+    plt.close() # Menutup plot agar tidak ditampilkan di server backend
+    
+    return histogram_filename
+
+# Fitur #1: Encode LSB
 def encode_lsb(image_path, message, output_path):
     img = Image.open(image_path)
     img = img.convert('RGB')
@@ -45,7 +77,7 @@ def encode_lsb(image_path, message, output_path):
     binary_message = ''.join(format(ord(c), '08b') for c in message)
     
     if len(binary_message) > max_capacity_bits:
-        raise ValueError(f"Pesan terlalu besar. Kapasitas maksimum gambar ini adalah {max_capacity_bits // 8} bytes.")
+        raise ValueError(f"Pesan terlalu besar. Kapasitas maksimum: {max_capacity_bits // 8} bytes.")
 
     pixels = img.load()
     msg_index = 0
@@ -65,7 +97,7 @@ def encode_lsb(image_path, message, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     img.save(output_path)
 
-# Fungsi untuk membaca pesan dari Image object 
+# Fitur #2: Decode LSB
 def decode_lsb_from_image(img):
     img = img.convert('RGB')
     pixels = img.load()
@@ -87,7 +119,7 @@ def decode_lsb(image_path):
     img = Image.open(image_path)
     return decode_lsb_from_image(img)
 
-# Hitung MSE dan PSNR
+# Fitur #3 & #4: Hitung MSE dan PSNR
 def calculate_mse_psnr(original_path, stego_path):
     original_arr = np.array(Image.open(original_path).convert('RGB'), dtype=np.float64)
     stego_arr = np.array(Image.open(stego_path).convert('RGB'), dtype=np.float64)
@@ -127,8 +159,9 @@ def result(image_name):
     mse_raw, psnr_raw = calculate_mse_psnr(original_path, stego_path)
     original_image = Image.open(original_path)
     _, capacity_bytes = calculate_capacity(original_image)
-    # --- Memanggil fungsi kalkulasi SSIM ---
     ssim_value = calculate_ssim(original_path, stego_path)
+    # --- Memanggil fungsi kalkulasi Histogram ---
+    histogram_file = create_and_save_histograms(original_path, stego_path, 'static/histograms')
 
     return render_template(
         'result.html',
@@ -136,8 +169,9 @@ def result(image_name):
         mse_raw=mse_raw,
         psnr=round(psnr_raw, 2),
         capacity_bytes=capacity_bytes,
-        # Mengirim data SSIM ke template
-        ssim=round(ssim_value, 4)
+        ssim=round(ssim_value, 4),
+        # Mengirim nama file histogram ke template
+        histogram_file=histogram_file
     )
 
 @app.route('/decode', methods=['POST'])
