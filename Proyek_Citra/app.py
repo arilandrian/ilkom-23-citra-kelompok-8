@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from PIL import Image
 import os
 from io import BytesIO
+import numpy as np
 
 app = Flask(__name__)
 
@@ -39,7 +40,7 @@ def encode_lsb(image_path, message, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     img.save(output_path)
 
-# Fungsi untuk membaca pesan dari Image object (tanpa simpan file)
+# Fungsi untuk membaca pesan dari Image object 
 def decode_lsb_from_image(img):
     img = img.convert('RGB')
     pixels = img.load()
@@ -64,6 +65,23 @@ def decode_lsb(image_path):
     img = Image.open(image_path)
     return decode_lsb_from_image(img)
 
+# Hitung MSE dan PSNR
+def calculate_mse_psnr(original_path, stego_path):
+    original = Image.open(original_path).convert('RGB')
+    stego = Image.open(stego_path).convert('RGB')
+
+    original_arr = np.array(original, dtype=np.float64)
+    stego_arr = np.array(stego, dtype=np.float64)
+
+    mse = np.mean((original_arr - stego_arr) ** 2)
+
+    if mse == 0:
+        psnr = float('inf')
+    else:
+        psnr = 10 * np.log10((255 ** 2) / mse)
+
+    return mse, psnr
+
 # Route untuk halaman utama (encode)
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -78,14 +96,31 @@ def index():
             image_file.save(input_path)
             encode_lsb(input_path, message, output_path)
 
-            return redirect(url_for('result', image_name=f"encoded_{image_file.filename}"))
+            return redirect(url_for('result', image_name=f"encoded_{image_file.filename}", original_name=image_file.filename))
 
     return render_template('index.html')
 
-# Route untuk halaman hasil encoding
 @app.route('/result/<image_name>')
 def result(image_name):
-    return render_template('result.html', image_name=image_name)
+    original_name = request.args.get('original_name')
+    if not original_name:
+        return "Original image not found.", 400
+
+    original_path = os.path.join('static/images', original_name)
+    stego_path = os.path.join('static/uploads', image_name)
+
+    # Hitung nilai asli
+    mse_raw, psnr_raw = calculate_mse_psnr(original_path, stego_path)
+
+    return render_template(
+        'result.html',
+        image_name=image_name,
+        mse_raw=mse_raw,
+        psnr=round(psnr_raw, 2)
+    )
+
+
+
 
 # Route untuk halaman decode tanpa menyimpan file
 @app.route('/decode', methods=['GET', 'POST'])
@@ -117,3 +152,5 @@ def decode_direct():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+

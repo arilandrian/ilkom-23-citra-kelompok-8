@@ -13,6 +13,12 @@
         <!-- Menampilkan gambar hasil penyisipan pesan -->
         <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Gambar Tersisipkan Pesan" class="img-fluid mb-4">
         
+       <div class="mb-4">
+            <h4 class="text-primary">Analisis Kualitas Gambar:</h4>
+            <p><strong>MSE (Mean Squared Error):</strong> {{ '%.10f'|format(mse_raw) }}</p>
+            <p><strong>PSNR (Peak Signal-to-Noise Ratio):</strong> {{ psnr }} dB</p>
+        </div>
+  
         <!-- Tombol untuk mengunduh gambar -->
         <a href="{{ url_for('static', filename='uploads/' + image_name) }}" download="{{ image_name }}">
             <button class="btn btn-primary">Unduh Gambar</button>
