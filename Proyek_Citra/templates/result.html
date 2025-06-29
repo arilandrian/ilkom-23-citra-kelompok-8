@@ -10,29 +10,27 @@
     <div class="container text-center">
         <h1 class="fw-bold mb-4">Gambar dengan Pesan Tersisipkan</h1>
         
-        <!-- Menampilkan gambar hasil penyisipan pesan -->
-        <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Gambar Tersisipkan Pesan" class="img-fluid mb-4">
+        <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Gambar Tersisipkan Pesan" class="img-fluid mb-4 rounded shadow">
         
-       <div class="mb-4">
-            <h4 class="text-primary">Analisis Kualitas Gambar:</h4>
-            <p><strong>MSE (Mean Squared Error):</strong> {{ '%.10f'|format(mse_raw) }}</p>
-            <p><strong>PSNR (Peak Signal-to-Noise Ratio):</strong> {{ psnr }} dB</p>
+       <div class="mb-4 text-start">
+            <h4 class="text-primary text-center">Analisis Kualitas dan Kapasitas Gambar:</h4>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>MSE (Mean Squared Error):</strong> {{ '%.10f'|format(mse_raw) }}</li>
+                <li class="list-group-item"><strong>PSNR (Peak Signal-to-Noise Ratio):</strong> {{ psnr }} dB</li>
+                <li class="list-group-item"><strong>Kapasitas Penyisipan:</strong> {{ capacity_bytes }} bytes</li>
+            </ul>
         </div>
   
-        <!-- Tombol untuk mengunduh gambar -->
-        <a href="{{ url_for('static', filename='uploads/' + image_name) }}" download="{{ image_name }}">
-            <button class="btn btn-primary">Unduh Gambar</button>
+        <a href="{{ url_for('static', filename='uploads/' + image_name) }}" download="{{ image_name }}" class="btn btn-primary">
+            Unduh Gambar
         </a>
 
-        <br><br>
-
-        <!-- Form untuk melihat pesan yang telah disisipkan -->
-        <form action="{{ url_for('decode_direct') }}" method="POST">
+        <form action="{{ url_for('decode_direct') }}" method="POST" class="d-inline">
             <input type="hidden" name="image_name" value="{{ image_name }}">
             <button type="submit" class="btn btn-success">Lihat Pesan</button>
         </form>
 
-        <br>
+        <br><br>
         <a href="/" class="btn btn-secondary">Kembali ke Halaman Utama</a>
     </div>
 

@@ -1,21 +1,39 @@
+# Proyek_Citra/app.py (Modifikasi Tahap 1)
+
 from flask import Flask, render_template, request, redirect, url_for
 from PIL import Image
 import os
-from io import BytesIO
 import numpy as np
 
 app = Flask(__name__)
+
+# --- FITUR MATEMATIKA BARU: Kalkulasi Kapasitas ---
+def calculate_capacity(img):
+    """
+    Menghitung kapasitas maksimum penyisipan dalam bit dan byte.
+    Ini adalah fitur matematika #5.
+    """
+    width, height = img.size
+    # 3 bit per piksel (1 untuk R, 1 untuk G, 1 untuk B)
+    capacity_in_bits = width * height * 3
+    capacity_in_bytes = capacity_in_bits // 8
+    return capacity_in_bits, capacity_in_bytes
 
 # Fungsi untuk menyisipkan pesan (encode LSB)
 def encode_lsb(image_path, message, output_path):
     img = Image.open(image_path)
     img = img.convert('RGB')
-    pixels = img.load()
-
+    
+    # Menambahkan pengecekan kapasitas sebelum encoding
+    max_capacity_bits, _ = calculate_capacity(img)
     message += "$t0p$"
     binary_message = ''.join(format(ord(c), '08b') for c in message)
-    msg_index = 0
+    
+    if len(binary_message) > max_capacity_bits:
+        raise ValueError(f"Pesan terlalu besar. Kapasitas maksimum gambar ini adalah {max_capacity_bits // 8} bytes.")
 
+    pixels = img.load()
+    msg_index = 0
     for y in range(img.height):
         for x in range(img.width):
             r, g, b = pixels[x, y]
@@ -67,11 +85,8 @@ def decode_lsb(image_path):
 
 # Hitung MSE dan PSNR
 def calculate_mse_psnr(original_path, stego_path):
-    original = Image.open(original_path).convert('RGB')
-    stego = Image.open(stego_path).convert('RGB')
-
-    original_arr = np.array(original, dtype=np.float64)
-    stego_arr = np.array(stego, dtype=np.float64)
+    original_arr = np.array(Image.open(original_path).convert('RGB'), dtype=np.float64)
+    stego_arr = np.array(Image.open(stego_path).convert('RGB'), dtype=np.float64)
 
     mse = np.mean((original_arr - stego_arr) ** 2)
 
@@ -93,12 +108,18 @@ def index():
             input_path = os.path.join('static/images', image_file.filename)
             output_path = os.path.join('static/uploads', f"encoded_{image_file.filename}")
 
+            os.makedirs('static/images', exist_ok=True)
             image_file.save(input_path)
-            encode_lsb(input_path, message, output_path)
+
+            try:
+                encode_lsb(input_path, message, output_path)
+            except ValueError as e:
+                # Menampilkan pesan error jika kapasitas terlampaui
+                return render_template('index.html', error=str(e))
 
             return redirect(url_for('result', image_name=f"encoded_{image_file.filename}", original_name=image_file.filename))
 
-    return render_template('index.html')
+    return render_template('index.html', error=None)
 
 @app.route('/result/<image_name>')
 def result(image_name):
@@ -109,36 +130,38 @@ def result(image_name):
     original_path = os.path.join('static/images', original_name)
     stego_path = os.path.join('static/uploads', image_name)
 
-    # Hitung nilai asli
     mse_raw, psnr_raw = calculate_mse_psnr(original_path, stego_path)
+
+    # --- Memanggil fungsi kalkulasi kapasitas ---
+    original_image_for_capacity = Image.open(original_path)
+    _, capacity_bytes = calculate_capacity(original_image_for_capacity)
 
     return render_template(
         'result.html',
         image_name=image_name,
         mse_raw=mse_raw,
-        psnr=round(psnr_raw, 2)
+        psnr=round(psnr_raw, 2),
+        # Mengirim data kapasitas ke template
+        capacity_bytes=capacity_bytes
     )
 
-
-
-
-# Route untuk halaman decode tanpa menyimpan file
-@app.route('/decode', methods=['GET', 'POST'])
+# Route untuk halaman decode
+@app.route('/decode', methods=['POST'])
 def decode():
-    if request.method == 'POST':
-        image_file = request.files['image']
-        if image_file:
-            filename = image_file.filename
-            temp_path = os.path.join('static/uploads', filename)
-            os.makedirs('static/uploads', exist_ok=True)
-            image_file.save(temp_path)
+    image_file = request.files.get('image')
+    if image_file:
+        filename = image_file.filename
+        temp_path = os.path.join('static/uploads', filename)
+        os.makedirs('static/uploads', exist_ok=True)
+        image_file.save(temp_path)
 
-            img = Image.open(temp_path)
-            message = decode_lsb_from_image(img)
+        img = Image.open(temp_path)
+        message = decode_lsb_from_image(img)
 
-            return render_template('decode_result.html', message=message, stego_image=f'uploads/{filename}')
+        return render_template('decode_result.html', message=message, stego_image=f'uploads/{filename}')
 
-    return render_template('decode.html')
+    # Kembali ke halaman utama jika tidak ada file
+    return redirect(url_for('index'))
 
 
 # Route untuk decode gambar langsung setelah encoding
@@ -152,5 +175,3 @@ def decode_direct():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-

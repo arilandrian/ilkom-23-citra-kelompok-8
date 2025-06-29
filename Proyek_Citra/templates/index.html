@@ -14,7 +14,12 @@
             <p class="text-muted">Simulasi Menjadi Spy 😎</p>
         </div>
 
-        <!-- Form Sisipkan Pesan ke Gambar -->
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
         <div class="card form-card p-4 mb-5">
             <div class="section-title">Sisipkan Pesan ke Gambar</div>
             <form method="POST" action="/" enctype="multipart/form-data">
@@ -30,7 +35,6 @@
             </form>
         </div>
 
-        <!-- Form Ambil Pesan dari Gambar -->
         <div class="card form-card p-4">
             <div class="section-title">Ambil Pesan dari Gambar</div>
             <form method="POST" action="/decode" enctype="multipart/form-data">
@@ -41,12 +45,6 @@
                 <button type="submit" class="btn btn-success">📥 Ambil Pesan</button>
             </form>
         </div>
-
-        {% if message %}
-        <div class="alert alert-info mt-3" role="alert">
-            {{ message }}
-        </div>
-        {% endif %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
