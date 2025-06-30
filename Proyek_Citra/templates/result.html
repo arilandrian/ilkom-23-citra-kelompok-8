@@ -8,9 +8,32 @@
 </head>
 <body>
     <div class="container text-center">
-        <h1 class="fw-bold mb-4">Gambar dengan Pesan Tersisipkan</h1>
-        
-        <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Gambar Tersisipkan Pesan" class="img-fluid mb-4 rounded shadow">
+        <h1 class="fw-bold mb-4 text-center text-white">Perbandingan Gambar</h1>
+
+        <div class="table-responsive text-center" style="background-color: #0d1b2a; padding: 20px; border-radius: 15px;">
+            <table class="table table-borderless align-middle text-white" style="margin: 0 auto; background-color: transparent;">
+                <tr>
+                    <th class="text-center">Gambar Asli</th>
+                    <th class="text-center">Gambar Stego</th>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='images/' + original_name) }}"
+                            alt="Gambar Asli"
+                            class="img-fluid"
+                            style="width: 100%; max-width: 300px; height: auto; border-radius: 10px;">
+
+                    </td>
+                    <td>
+                        <img src="{{ url_for('static', filename='uploads/' + image_name) }}"
+                            alt="Gambar Stego"
+                            class="img-fluid"
+                            style="width: 100%; max-width: 300px; height: auto; border-radius: 10px;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         
         <div class="mb-4 text-start">
             <h4 class="text-primary text-center">Analisis Kualitas dan Kapasitas Gambar:</h4>

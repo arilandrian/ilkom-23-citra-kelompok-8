@@ -166,11 +166,11 @@ def result(image_name):
     return render_template(
         'result.html',
         image_name=image_name,
+        original_name=original_name,  # ✅ ini wajib ditambahkan
         mse_raw=mse_raw,
         psnr=round(psnr_raw, 2),
         capacity_bytes=capacity_bytes,
         ssim=round(ssim_value, 4),
-        # Mengirim nama file histogram ke template
         histogram_file=histogram_file
     )
 
