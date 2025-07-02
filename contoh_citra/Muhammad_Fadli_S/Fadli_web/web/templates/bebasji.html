@@ -19,13 +19,4 @@
     </div>
 
     
-    {% if original and processed %}
-        <h2>Original Image</h2>
-        <img src="{{ url_for('static', filename='uploads/' + original) }}" alt="Original Image">
-        <h2>Grayscale Image</h2>
-        <img src="{{ url_for('static', filename='processed/' + processed) }}" alt="Processed Image">
-    {% endif %}
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+    
