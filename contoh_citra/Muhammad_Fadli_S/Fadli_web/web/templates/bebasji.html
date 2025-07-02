@@ -19,4 +19,31 @@
     </div>
 
     
-    
+{% if original and processed %}
+        <h2>Original Image</h2>
+        <img src="{{ url_for('static', filename='uploads/' + original) }}" alt="Original Image">
+        <h2>Processed Image</h2>
+        <img src="{{ url_for('static', filename='processed/' + processed) }}" alt="Processed Image">
+    {% endif %}
+
+    <footer>
+        <p>&copy; 2025 Image Resolution | Padli.s</p>
+    </footer>
+
+    <script>
+        document.getElementById("imageInput").addEventListener("change", function(event) {
+            const preview = document.getElementById("preview");
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
+
